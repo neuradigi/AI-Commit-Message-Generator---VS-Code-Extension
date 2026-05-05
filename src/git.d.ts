@@ -23,6 +23,7 @@ export interface Change {
 export interface RepositoryState {
   readonly indexChanges: Change[];
   readonly workingTreeChanges: Change[];
+  readonly onDidChange: Event<void>;
 }
 
 export interface Repository {

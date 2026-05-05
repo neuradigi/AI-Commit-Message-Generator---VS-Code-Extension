@@ -17,6 +17,12 @@ const OLLAMA_INSTALL_URL = 'https://ollama.com/download';
 
 export async function activate(context: vscode.ExtensionContext) {
   await setGeneratingContext();
+  await vscode.commands.executeCommand('setContext', 'neuradigiCommit.hasChanges', false);
+
+  // Track repo change state so the SCM title button can be disabled when
+  // there is nothing to commit. We watch every repository the Git extension
+  // exposes and also any added later.
+  void watchRepoChanges(context);
 
   context.subscriptions.push(
     vscode.commands.registerCommand('neuradigiCommit.generate', async (arg?: unknown) => {
@@ -56,6 +62,31 @@ async function setGeneratingContext() {
   );
 }
 
+async function watchRepoChanges(context: vscode.ExtensionContext) {
+  let api: GitAPI;
+  try {
+    api = await getGitAPI();
+  } catch {
+    return; // Git extension unavailable; button just stays disabled.
+  }
+
+  const update = () => {
+    const hasAny = api.repositories.some(
+      r => r.state.indexChanges.length > 0 || r.state.workingTreeChanges.length > 0
+    );
+    void vscode.commands.executeCommand('setContext', 'neuradigiCommit.hasChanges', hasAny);
+  };
+
+  const watch = (repo: Repository) => {
+    context.subscriptions.push(repo.state.onDidChange(update));
+  };
+
+  api.repositories.forEach(watch);
+  context.subscriptions.push(api.onDidOpenRepository(repo => { watch(repo); update(); }));
+  context.subscriptions.push(api.onDidCloseRepository(update));
+  update();
+}
+
 async function getGitAPI(): Promise<GitAPI> {
   const ext = vscode.extensions.getExtension<GitExtension>('vscode.git');
   if (!ext) throw new Error('Built-in Git extension (vscode.git) not found.');
@@ -91,12 +122,21 @@ async function generate(arg: unknown) {
   const key = repo.rootUri.toString();
 
   if (jobs.has(key)) throw new Error('Already generating for this repository.');
-  if (repo.state.indexChanges.length === 0) {
-    throw new Error('No staged changes. Stage files before generating a commit message.');
+
+  // Mirror `git commit` semantics: if anything is staged, use the staged diff;
+  // otherwise fall back to the full working-tree diff so users can generate a
+  // message without explicitly staging first.
+  const hasStaged = repo.state.indexChanges.length > 0;
+  const hasUnstaged = repo.state.workingTreeChanges.length > 0;
+  if (!hasStaged && !hasUnstaged) {
+    throw new Error('No changes to commit.');
   }
 
-  const diff = await repo.diff(true);
-  if (!diff || diff.trim().length === 0) throw new Error('Staged diff is empty.');
+  const useStaged = hasStaged;
+  const diff = await repo.diff(useStaged);
+  if (!diff || diff.trim().length === 0) {
+    throw new Error(useStaged ? 'Staged diff is empty.' : 'Working-tree diff is empty.');
+  }
 
   const backend = await resolveBackend();
   if (!backend) return; // user cancelled or chose to install something
@@ -435,7 +475,7 @@ function runClaude(
     // CLI then mis-parses things like "---DIFF---" as flags. The full
     // instructions and the diff are sent via stdin instead.
     const args = ['-p', 'Read the instructions and staged diff from stdin and produce the requested output.', ...extraArgs];
-    const stdinPayload = `${prompt}\n\n=== STAGED DIFF ===\n${diff}\n=== END OF DIFF ===\n`;
+    const stdinPayload = `${prompt}\n\n=== GIT DIFF ===\n${diff}\n=== END OF DIFF ===\n`;
 
     let child: ChildProcess;
     try {
@@ -493,7 +533,7 @@ async function runOllama(
   const job = jobs.get(key);
   const signal = job?.controller.signal;
 
-  const fullPrompt = `${prompt}\n\n=== STAGED DIFF ===\n${diff}\n=== END OF DIFF ===\n`;
+  const fullPrompt = `${prompt}\n\n=== GIT DIFF ===\n${diff}\n=== END OF DIFF ===\n`;
 
   let res: Response;
   try {

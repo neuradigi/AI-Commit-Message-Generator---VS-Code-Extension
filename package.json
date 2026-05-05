@@ -2,7 +2,7 @@
   "name": "neuradigi-commit",
   "displayName": "AI Git Commit Message Generator",
   "description": "AI-generated Conventional Commits messages from your staged diff. One-click sparkle in the Source Control panel. Pick your engine: Claude CLI (cloud, best quality) or Ollama (local, free, offline) — your data, your choice.",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "publisher": "neuradigi",
   "license": "MIT",
   "icon": "icon.png",
@@ -72,7 +72,7 @@
         {
           "command": "neuradigiCommit.generate",
           "group": "navigation",
-          "when": "scmProvider == git && !neuradigiCommit.generating"
+          "when": "scmProvider == git && !neuradigiCommit.generating && neuradigiCommit.hasChanges"
         },
         {
           "command": "neuradigiCommit.cancel",

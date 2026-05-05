@@ -2,6 +2,15 @@
 
 All notable changes to **AI Git Commit Message Generator** are documented here. This project follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] — 2026-05-05
+
+### Changed
+- **Display name renamed to "AI Git Commit Message Generator"** — the previous name collided with another marketplace listing.
+- **Generate from unstaged changes when nothing is staged.** The sparkle now mirrors `git commit` semantics: if any files are staged, the message is generated from the staged diff only; otherwise it falls back to the full working-tree diff. Previously the command failed with "No staged changes."
+
+### Added
+- **Sparkle button is disabled when there is nothing to commit.** A new context key (`neuradigiCommit.hasChanges`) tracks the repository's index + working-tree state, so the title-bar action is hidden when both are empty.
+
 ## [1.2.1] — 2026-05-05
 
 ### Fixed

@@ -1,6 +1,6 @@
 {
   "name": "neuradigi-commit",
-  "displayName": "AI Commit Message Generator",
+  "displayName": "AI Git Commit Message Generator",
   "description": "AI-generated Conventional Commits messages from your staged diff. One-click sparkle in the Source Control panel. Pick your engine: Claude CLI (cloud, best quality) or Ollama (local, free, offline) — your data, your choice.",
   "version": "1.2.1",
   "publisher": "neuradigi",

@@ -1,4 +1,4 @@
-# AI Commit Message Generator
+# AI Git Commit Message Generator
 
 Click a sparkle next to your Source Control commit box → get a Conventional Commits message generated from your staged diff → review, tweak, commit.
 

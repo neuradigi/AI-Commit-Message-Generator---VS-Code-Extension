@@ -1,6 +1,6 @@
 # Change Log
 
-All notable changes to **AI Commit Message Generator** are documented here. This project follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+All notable changes to **AI Git Commit Message Generator** are documented here. This project follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [1.2.1] — 2026-05-05
 
@@ -11,7 +11,7 @@ All notable changes to **AI Commit Message Generator** are documented here. This
 ## [1.2.0] — 2026-05-05
 
 ### Changed
-- **Renamed to "AI Commit Message Generator"** to reflect that the extension now supports multiple engines (Claude CLI and Ollama). The publisher is unchanged (Neuradigi Technologies). Previously titled "Generate Commit Message using Claude".
+- **Renamed to "AI Git Commit Message Generator"** to reflect that the extension now supports multiple engines (Claude CLI and Ollama). The publisher is unchanged (Neuradigi Technologies). Previously titled "Generate Commit Message using Claude".
 - **New icon** — the Neuradigi brand mark, since the extension is no longer Claude-specific.
 - Description updated to lead with the value (AI-generated Conventional Commits messages, your choice of engine, your data) instead of an implementation detail.
 

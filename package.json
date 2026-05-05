@@ -1,0 +1,146 @@
+{
+  "name": "neuradigi-commit",
+  "displayName": "AI Commit Message Generator",
+  "description": "AI-generated Conventional Commits messages from your staged diff. One-click sparkle in the Source Control panel. Pick your engine: Claude CLI (cloud, best quality) or Ollama (local, free, offline) — your data, your choice.",
+  "version": "1.2.1",
+  "publisher": "neuradigi",
+  "license": "MIT",
+  "icon": "icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://localhost/neuradigi-commit.git"
+  },
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "SCM Providers",
+    "Machine Learning",
+    "Other"
+  ],
+  "keywords": [
+    "git",
+    "commit",
+    "commit message",
+    "commit generator",
+    "conventional commits",
+    "ai",
+    "claude",
+    "ollama",
+    "local llm",
+    "scm",
+    "source control"
+  ],
+  "extensionDependencies": [
+    "vscode.git"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "neuradigiCommit.generate",
+        "title": "Generate Commit Message",
+        "category": "Neuradigi Commit",
+        "icon": "$(sparkle)"
+      },
+      {
+        "command": "neuradigiCommit.cancel",
+        "title": "Stop Generating Commit Message",
+        "category": "Neuradigi Commit",
+        "icon": "$(stop-circle)"
+      },
+      {
+        "command": "neuradigiCommit.switchBackend",
+        "title": "Switch Backend (Claude / Ollama)",
+        "category": "Neuradigi Commit"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "neuradigiCommit.cancel",
+          "when": "neuradigiCommit.generating"
+        },
+        {
+          "command": "neuradigiCommit.switchBackend"
+        }
+      ],
+      "scm/title": [
+        {
+          "command": "neuradigiCommit.generate",
+          "group": "navigation",
+          "when": "scmProvider == git && !neuradigiCommit.generating"
+        },
+        {
+          "command": "neuradigiCommit.cancel",
+          "group": "navigation",
+          "when": "scmProvider == git && neuradigiCommit.generating"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Neuradigi Commit",
+      "properties": {
+        "neuradigiCommit.backend": {
+          "type": "string",
+          "enum": [
+            "auto",
+            "claude",
+            "ollama"
+          ],
+          "enumDescriptions": [
+            "Auto-detect: pick whichever is installed; if both are available, ask once and remember the choice.",
+            "Claude CLI (cloud) — best quality. Requires the Claude Code CLI installed and authenticated.",
+            "Ollama (local) — free and offline. Requires Ollama running on your machine."
+          ],
+          "default": "auto",
+          "description": "Which backend to use when generating commit messages."
+        },
+        "neuradigiCommit.cliPath": {
+          "type": "string",
+          "default": "claude",
+          "description": "Path to the Claude CLI executable."
+        },
+        "neuradigiCommit.ollamaUrl": {
+          "type": "string",
+          "default": "http://localhost:11434",
+          "description": "Base URL of the Ollama HTTP server."
+        },
+        "neuradigiCommit.ollamaModel": {
+          "type": "string",
+          "default": "qwen2.5-coder:1.5b",
+          "description": "Ollama model to use. Pull it first with `ollama pull <model>`. Recommended: `qwen2.5-coder:1.5b` (small, fast) or `qwen2.5-coder:7b` (better quality, more RAM)."
+        },
+        "neuradigiCommit.prompt": {
+          "type": "string",
+          "default": "You are a non-interactive commit message generator. Read the staged git diff below and output exactly one Conventional Commits message describing it. STRICT RULES: output ONLY the commit message; no preamble, no explanation, no code fences, no markdown, no questions, no acknowledgements. Format: type(optional-scope): subject under 72 chars; add a blank line and a wrapped body only if the change is non-trivial. Allowed types: feat, fix, docs, style, refactor, perf, test, build, ci, chore. If the diff is empty, whitespace-only, or you cannot determine its purpose, output exactly: chore: minor changes",
+          "description": "Prompt sent to the AI engine (used by both Claude and Ollama)."
+        },
+        "neuradigiCommit.extraArgs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Extra args to pass to the Claude CLI (e.g. [\"--model\", \"claude-sonnet-4-6\"])."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package",
+    "publish": "vsce publish",
+    "vscode:prepublish": "npm run compile"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.80.0",
+    "@vscode/vsce": "^2.24.0",
+    "typescript": "^5.4.0"
+  }
+}

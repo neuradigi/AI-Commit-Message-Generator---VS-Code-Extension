@@ -71,12 +71,12 @@
       "scm/title": [
         {
           "command": "neuradigiCommit.generate",
-          "group": "navigation",
+          "group": "navigation@1",
           "when": "scmProvider == git && !neuradigiCommit.generating && neuradigiCommit.hasChanges"
         },
         {
           "command": "neuradigiCommit.cancel",
-          "group": "navigation",
+          "group": "navigation@1",
           "when": "scmProvider == git && neuradigiCommit.generating"
         }
       ]

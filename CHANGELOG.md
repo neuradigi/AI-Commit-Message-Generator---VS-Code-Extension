@@ -11,6 +11,9 @@ All notable changes to **AI Git Commit Message Generator** are documented here. 
 ### Added
 - **Sparkle button is disabled when there is nothing to commit.** A new context key (`neuradigiCommit.hasChanges`) tracks the repository's index + working-tree state, so the title-bar action is hidden when both are empty.
 
+### Fixed
+- **Stop button now appears in the same slot as the sparkle.** Both SCM title actions are pinned to `navigation@1`, so swapping between "generate" and "stop" no longer makes the button jump to a different position in the toolbar.
+
 ## [1.2.1] — 2026-05-05
 
 ### Fixed
